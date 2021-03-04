@@ -9,7 +9,7 @@ import versioneer
 
 readme_file_path = Path(__file__).absolute().parent / "README.md"
 
-required_packages = ['opencensus-ext-azure']
+required_packages = ['qcodes>=0.21.0']
 package_data = {"sequence_builder": ["conf/telemetry.ini"] }
 
 
