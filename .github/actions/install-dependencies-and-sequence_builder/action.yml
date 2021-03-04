@@ -1,5 +1,5 @@
-name: "Install-dependencies-and-sequence_builder"
-description: "Install sequence_builder and its dependencies"
+name: "Install-dependencies-and-sequencebuilder"
+description: "Install sequencebuilder and its dependencies"
 runs:
   using: "composite"
   steps:

@@ -1,6 +1,6 @@
 import pytest
 
-import sequence_builder as ccp
+import sequencebuilder as ccp
 
 
 @pytest.fixture(scope="session", autouse=True)

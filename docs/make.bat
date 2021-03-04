@@ -32,7 +32,7 @@ REM This is not part of any job since it should be done
 REM for all jobs except clean and help.
 REM Note that all folders after the first one are excluded
 REM (see sphinx-apidoc help for more info).
-sphinx-apidoc  -o  _auto  -d 10 ..\sequence_builder
+sphinx-apidoc  -o  _auto  -d 10 ..\sequencebuilder
 mkdir api\generated\
 copy _auto\* api\generated\
 

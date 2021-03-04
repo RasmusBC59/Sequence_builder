@@ -1,4 +1,4 @@
-name: sequence_builder
+name: sequencebuilder
 channels:
  - defaults
 dependencies:

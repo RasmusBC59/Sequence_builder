@@ -7,11 +7,11 @@ __version__ = get_versions()['version']
 del get_versions
 
 
-import sequence_builder
-from sequence_builder.telemetry import start_telemetry
+import sequencebuilder
+from sequencebuilder.telemetry import start_telemetry
 
 
-CONFIG_PATH = (Path(Path(sequence_builder.__file__).parent) /
+CONFIG_PATH = (Path(Path(sequencebuilder.__file__).parent) /
                'conf' / 'telemetry.ini')
 
 telemetry_config = ConfigParser()
@@ -21,4 +21,4 @@ if telemetry_config['Telemetry'].getboolean('enabled'):
     start_telemetry()
 
 logger = logging.getLogger(__name__)
-logger.info(f'Imported sequence_builderversion: {__version__}')
+logger.info(f'Imported sequencebuilderversion: {__version__}')

@@ -7,8 +7,8 @@ import platform
 from opencensus.ext.azure.log_exporter import AzureLogHandler
 from opencensus.ext.azure.common.protocol import Envelope
 
-import sequence_builder as ccp
-import sequence_builder
+import sequencebuilder as ccp
+import sequencebuilder
 
 telemetry_handler: Optional[AzureLogHandler] = None
 
@@ -62,7 +62,7 @@ def start_telemetry() -> None:
 
     instrumentation_key = ccp.telemetry_config['Telemetry']['instrumentation_key']
 
-    root_logger = logging.getLogger(sequence_builder.__name__)
+    root_logger = logging.getLogger(sequencebuilder.__name__)
     root_logger.setLevel(logging.DEBUG)
 
     # remove previously set handlers
@@ -79,7 +79,7 @@ def start_telemetry() -> None:
 
     def callback_function(envelope: Envelope) -> bool:
         envelope.tags['ai.user.accountId'] = platform.node()
-        envelope.tags['ai.cloud.role'] = f"sequence_builder"
+        envelope.tags['ai.cloud.role'] = f"sequencebuilder"
         return True
 
     telemetry_handler = AzureLogHandler(

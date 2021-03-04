@@ -22,7 +22,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
-project = "sequence_builder"
+project = "sequencebuilder"
 copyright = "Rasmus Bjerregaard Christensen"
 author = "Rasmus Bjerregaard Christensen"
 project_description = "build broadbean sequences and measure by Alazar"
@@ -66,7 +66,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # auto versioning
-# version = '{}'.format(sequence_builder.__version__)
+# version = '{}'.format(sequencebuilder.__version__)
 # The full version, including alpha/beta/rc tags.
 release = "0.1.0"
 

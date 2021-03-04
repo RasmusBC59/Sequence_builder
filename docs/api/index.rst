@@ -1,9 +1,9 @@
 **************************************************
-sequence_builder API Documentation
+sequencebuilder API Documentation
 **************************************************
 
 
-This page documents the sequence_builder API.
+This page documents the sequencebuilder API.
 
 API
 ---

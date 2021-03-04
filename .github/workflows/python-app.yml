@@ -28,16 +28,16 @@ jobs:
       uses: actions/setup-python@v2 
       with:
         python-version: ${{ matrix.python-version }} 
-    - uses: ./.github/actions/install-dependencies-and-sequence_builder
+    - uses: ./.github/actions/install-dependencies-and-sequencebuilder
     - name: disable_telemetry
       shell: bash -l {0}
-      run: sed -i "s/\(enabled *= *\).*/\1False/" ./sequence_builder/conf/telemetry.ini
+      run: sed -i "s/\(enabled *= *\).*/\1False/" ./sequencebuilder/conf/telemetry.ini
 
     - name: Run Mypy
-      run: mypy sequence_builder
+      run: mypy sequencebuilder
     - name: Test with pytest
       run: |
-        pytest ./sequence_builder/tests/
+        pytest ./sequencebuilder/tests/
     - uses: r-lib/actions/setup-pandoc@v1
       with:
         pandoc-version: '2.7.3' # The pandoc version to download (if necessary) and use.

@@ -1,5 +1,5 @@
 *****************************************************************
-sequence_builder
+sequencebuilder
 *****************************************************************
 
 build broadbean sequences and measure by Alazar

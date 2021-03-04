@@ -12,7 +12,7 @@ def hello_world() -> None:
     """
     Print hello world :)
     """
-    print("Hello, world! from sequence_builder")
+    print("Hello, world! from sequencebuilder")
 
 # This function addes to numbers
 def myadd(x: float,y: float) -> float:

@@ -1,7 +1,7 @@
 """
 Test that the configuration system works
 """
-import sequence_builder as ccp
+import sequencebuilder as ccp
 
 
 def test_config_sections_and_fields():

@@ -1,5 +1,5 @@
 """
-Installs the sequence_builder package
+Installs the sequencebuilder package
 """
 
 from setuptools import setup, find_packages
@@ -10,11 +10,11 @@ import versioneer
 readme_file_path = Path(__file__).absolute().parent / "README.md"
 
 required_packages = ['qcodes>=0.21.0']
-package_data = {"sequence_builder": ["conf/telemetry.ini"] }
+package_data = {"sequencebuilder": ["conf/telemetry.ini"] }
 
 
 setup(
-    name="sequence_builder",
+    name="sequencebuilder",
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     python_requires=">=3.7",

@@ -1,5 +1,5 @@
 # Makefile for Sphinx documentation
-# for the sequence_builder package
+# for the sequencebuilder package
 #
 
 # You can set these variables from the command line, and also
@@ -23,7 +23,7 @@ clean:
 
 # generate api docs
 genapi:
-	sphinx-apidoc  -o  _auto  -d 10 ../sequence_builder
+	sphinx-apidoc  -o  _auto  -d 10 ../sequencebuilder
 	mkdir -p api/generated/
 	cp _auto/* api/generated/
 

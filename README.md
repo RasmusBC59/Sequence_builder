@@ -1,4 +1,4 @@
-# sequence_builder
+# sequencebuilder
 <p align="center">
   <img src="https://img.shields.io/static/v1?style=for-the-badge&label=code-status&message=Caution!&color=red"/>
   <img src="https://img.shields.io/static/v1?style=for-the-badge&label=initial-commit&message=Rasmus&color=inactive"/>
@@ -12,9 +12,9 @@ Package for building broadbean sequences and measure with the Alazar card
 
 ## Running the tests
 
-If you have gotten 'sequence_builder' from source, you may run the tests locally.
+If you have gotten 'sequencebuilder' from source, you may run the tests locally.
 
-Install `sequence_builder` along with its test dependencies into your virtual environment by executing the following in the root folder
+Install `sequencebuilder` along with its test dependencies into your virtual environment by executing the following in the root folder
 
 ```bash
 $ pip install .
@@ -25,9 +25,9 @@ Then run `pytest` in the `tests` folder.
 
 ## Building the documentation
 
-If you have gotten `sequence_builder` from source, you may build the docs locally.
+If you have gotten `sequencebuilder` from source, you may build the docs locally.
 
-Install `sequence_builder` along with its documentation dependencies into your virtual environment by executing the following in the root folder
+Install `sequencebuilder` along with its documentation dependencies into your virtual environment by executing the following in the root folder
 
 ```bash
 $ pip install .

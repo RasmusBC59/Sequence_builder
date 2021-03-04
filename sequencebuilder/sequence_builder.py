@@ -1,7 +1,7 @@
 import numpy as np
 import broadbean as bb
 from qcodes import validators as vals
-from sequence_builder.back_of_beans import BagOfBeans
+from sequencebuilder.back_of_beans import BagOfBeans
 
 
 

@@ -1,5 +1,5 @@
 import time
-from sequence_builder.sequence_builder import SequenceBuilder
+from sequencebuilder.sequence_builder import SequenceBuilder
 
 class AWGController(SequenceBuilder):
     def __init__(self, name: str, awg, **kwargs):

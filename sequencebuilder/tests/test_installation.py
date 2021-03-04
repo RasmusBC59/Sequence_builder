@@ -5,7 +5,7 @@ This test file is included so that the tests can run immediately after the
 template creation of the repo
 """
 
-from sequence_builder.hello_world import greeter, hello_world, myadd
+from sequencebuilder.hello_world import greeter, hello_world, myadd
 
 
 def test_greeter():
