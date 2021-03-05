@@ -2,7 +2,7 @@ import time
 from sequencebuilder.sequence_builder import SequenceBuilder
 
 class AWGController(SequenceBuilder):
-    def __init__(self, name: str, awg, **kwargs):
+    def __init__(self, name: str, awg=None, **kwargs):
         super().__init__(name, **kwargs)
         self.awg = awg        
     def uploadToAWG(self, awg_amp: list = [0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5]) -> None:
