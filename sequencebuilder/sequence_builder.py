@@ -114,7 +114,10 @@ class SequenceBuilder(BagOfBeans):
         readout_freq = self.readout_freq_1.get() #- self.cavity.frequency()
         for i,delta_time in enumerate(pulse_to_readout_time):
             self.elem = bb.Element()
-            seg_pi = self.seg_pi(delta_time)
+            if i == 0:
+                seg_pi = self.seg_pi(delta_time,marker=True)
+            else:
+                seg_pi = self.seg_pi(delta_time,marker=False)
             self.elem.addBluePrint(1, seg_pi)
             self.elem_add_readout_pulse(readout_freq)
             self.seq.seq.addElement(i+1,self.elem)
@@ -182,12 +185,13 @@ class SequenceBuilder(BagOfBeans):
         return seg_sin
 
     def seg_pi(self,
-                pulse_to_readout_time:float = 0) -> bb.BluePrint:
+                pulse_to_readout_time:float = 0, marker:bool = False) -> bb.BluePrint:
         """
         Returns a broadbean BluePrint of a PI pulse 
 
         args:
-        pulse_to_readout_time (float): time between the end of the PI pulse and the readout  
+        pulse_to_readout_time (float): time between the end of the PI pulse and the readout
+        marker (bool): include marker   
         """
         
         first_time = self.cycle_time-self.pulse_time-self.readout_time-pulse_to_readout_time 
@@ -197,7 +201,8 @@ class SequenceBuilder(BagOfBeans):
         seg_sin.insertSegment(0, ramp, (0, 0), name='first', dur=first_time)
         seg_sin.insertSegment(1, ramp, (0.05, 0.05), name='pulse', dur=self.pulse_time)
         seg_sin.insertSegment(2, ramp, (0, 0), name='read', dur=end_time)
-        seg_sin.marker1 = [(first_time+self.pulse_time+self.marker_offset+pulse_to_readout_time, self.cycle_time)]
+        if marker:
+            seg_sin.marker1 = [(first_time+self.pulse_time+self.marker_offset+pulse_to_readout_time, self.cycle_time)]
         seg_sin.setSR(self.SR.get())
         
         return seg_sin   
