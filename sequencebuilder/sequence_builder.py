@@ -7,7 +7,7 @@ from sequencebuilder.back_of_beans import BagOfBeans
 
 ramp = bb.PulseAtoms.ramp  # args: start, stop
 sine = bb.PulseAtoms.sine  # args: freq, ampl, off, phase
-gausian =  bb.PulseAtoms.gaussian_special # args: ampl, sigma, mu, offset
+gausian =  bb.PulseAtoms.gaussian_smooth_cutoff # args: ampl, sigma, mu, offset
 
 class SequenceBuilder(BagOfBeans):
     """
