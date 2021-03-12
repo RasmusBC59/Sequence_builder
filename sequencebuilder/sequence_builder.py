@@ -7,6 +7,7 @@ from sequencebuilder.back_of_beans import BagOfBeans
 
 ramp = bb.PulseAtoms.ramp  # args: start, stop
 sine = bb.PulseAtoms.sine  # args: freq, ampl, off, phase
+gausian =  bb.PulseAtoms.gaussian_special # args: ampl, sigma, mu, offset
 
 class SequenceBuilder(BagOfBeans):
     """
@@ -28,10 +29,10 @@ class SequenceBuilder(BagOfBeans):
         Methods
         -------
         MultiQ_SSB_Spec_NoOverlap
-            sequence of two channels with orthogonal sine/cosine pulses
+            sequence of two channels with orthogonal sine/cosine pulses and two channels for the readout
         MultiQ_Lifetime_overlap
             One channels containing a pi-pulse
-            varying the time between the end of the pi-pulse and the readout
+            varying the time between the end of the pi-pulse and the readout and two channels for the readout
     """
 
     def __init__(self,name:str,number_read_freqs:int = 1,**kwargs):
@@ -122,30 +123,38 @@ class SequenceBuilder(BagOfBeans):
         self.seq.seq.setSR(self.SR.get())
       
         self.seq.set_all_channel_amplitude_offset(amplitude=1, offset=0)
-        
-    def test_station(self, start:float, stop:float, npts:int,channel: int) -> None:
+
+    def give_me_a_name(self, start:float, stop:float, npts:int) -> None:
         """ 
-        Updates the broadbean sequence so it containsone channel with a sine pulse for an array of  frequencies
-
+        Updates the broadbean sequence so it contains one channels containing a gausian
+        varying sigma
+        and two channels for the readout for IQ mixing 
+        
             args:
-            start (float): Starting point of the frequency interval
-            stop (float): Endpoint point of the frequency interval
-            npts (int): Number of point in the frequency interval
-            channel (int): The Channel of the seq/AWG
+            start (float): Starting point of the sigma interval
+            stop (float): Endpoint point of the sigma interval
+            npts (int): Number of point in the sigma interval
         """
+        
         self.seq.empty_sequence()
-        freq_interval = np.linspace(start,stop,npts)
+        readout_freq = self.readout_freq_1.get()
+        sigma_interval = np.linspace(start,stop,npts)
+        readout_freq = self.readout_freq_1.get() #- self.cavity.frequency()
+        for i,sigma in enumerate(sigma_interval):
+            self.elem = bb.Element()
+            if i == 0:
+                seg_g = self.seg_gausian(sigma=sigma, marker=True)
+            else:
+                seg_g = self.seg_gausian(sigma=sigma, marker=False)
+            self.elem.addBluePrint(1, seg_g)
+            self.elem_add_readout_pulse(readout_freq)
+            self.seq.seq.addElement(i+1,self.elem)
 
-        for i,f in enumerate(freq_interval):
-            elem = bb.Element()
-            seg_sin = self.seg_sine(frequency = f)
-            elem.addBluePrint(channel, seg_sin)
-            self.seq.seq.addElement(i+1, elem)
             self.seq_settings_infinity_loop(i+1,npts)
         self.seq.seq.setSR(self.SR.get())
-
-        self.seq.set_all_channel_amplitude_offset(amplitude=1, offset=0)
-
+      
+        self.seq.set_all_channel_amplitude_offset(amplitude=1, offset=0)        
+        
 
     def seg_sine(self,
                 frequency:float,
@@ -156,7 +165,8 @@ class SequenceBuilder(BagOfBeans):
 
         args:
         frequency (float): frequency of the sine 
-        phase (float): phase of the sine 
+        phase (float): phase of the sine
+        marker (bool): include marker 
         """
         
         first_time = self.cycle_time-self.pulse_time-self.readout_time 
@@ -190,7 +200,36 @@ class SequenceBuilder(BagOfBeans):
         seg_sin.marker1 = [(first_time+self.pulse_time+self.marker_offset+pulse_to_readout_time, self.cycle_time)]
         seg_sin.setSR(self.SR.get())
         
-        return seg_sin        
+        return seg_sin   
+
+    def seg_gausian(self,
+                    pulse_to_readout_time:float = 0,
+                    ampl:float = 1,
+                    sigma:float = 1e-9,
+                    mu:float = 0,
+                    offset: float = 0,
+                    marker:bool = False
+                    ) -> bb.BluePrint:
+        """
+        Returns a broadbean BluePrint of a gausian pulse 
+
+        args:
+        pulse_to_readout_time (float): time between the end of the gausion pulse and the readout
+        marker (bool): include marker 
+        """
+        time_sigma = 5*sigma
+        first_time = self.cycle_time-time_sigma-self.readout_time-pulse_to_readout_time 
+        end_time = self.readout_time+pulse_to_readout_time
+        
+        seg_g = bb.BluePrint()
+        seg_g.insertSegment(0, ramp, (0, 0), name='first', dur=first_time)
+        seg_g.insertSegment(1, gausian, (ampl, sigma,mu,offset), name='pulse', dur=time_sigma)
+        seg_g.insertSegment(2, ramp, (0, 0), name='read', dur=end_time)
+        if marker:
+            seg_g.marker1 = [(first_time+time_sigma+self.marker_offset+pulse_to_readout_time, self.cycle_time)]
+        seg_g.setSR(self.SR.get())
+        
+        return seg_g      
 
 
 
