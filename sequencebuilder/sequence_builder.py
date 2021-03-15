@@ -115,9 +115,9 @@ class SequenceBuilder(BagOfBeans):
         for i,delta_time in enumerate(pulse_to_readout_time):
             self.elem = bb.Element()
             if i == 0:
-                seg_pi = self.seg_pi(delta_time,marker=True)
+                seg_pi = self.seg_pi_overlap(pulse_time=self.pulse_time, overlap_time = delta_time , marker=True)
             else:
-                seg_pi = self.seg_pi(delta_time,marker=False)
+                seg_pi = self.seg_pi_overlap(pulse_time=self.pulse_time, overlap_time = delta_time, marker=False)
             self.elem.addBluePrint(1, seg_pi)
             self.elem_add_readout_pulse(readout_freq)
             self.seq.seq.addElement(i+1,self.elem)
@@ -217,7 +217,7 @@ class SequenceBuilder(BagOfBeans):
         return seg_sin
 
     def seg_pi_overlap(self,
-                       pulse_time:float = 0, overlap_time:float = 0) -> bb.BluePrint:
+                       pulse_time:float = 0, overlap_time:float = 0,marker:bool = False) -> bb.BluePrint:
         """
         Returns a broadbean BluePrint of a PI pulse 
 
@@ -237,34 +237,13 @@ class SequenceBuilder(BagOfBeans):
             seg_sin.insertSegment(0, ramp, (0, 0), name='first', dur=first_time)
             seg_sin.insertSegment(1, ramp, (0.25, 0.25), name='pulse', dur=pulse_time)
             seg_sin.insertSegment(2, ramp, (0, 0), name='read', dur=end_time)
-        seg_sin.marker1 = [(first_time+pulse_time+self.marker_offset, self.cycle_time)]
+        if marker:
+            seg_sin.marker1 = [(first_time+pulse_time+self.marker_offset, self.cycle_time)]
         seg_sin.setSR(self.SR.get())
         
         return seg_sin        
     
 
-    def seg_pi(self,
-                pulse_to_readout_time:float = 0, marker:bool = False) -> bb.BluePrint:
-        """
-        Returns a broadbean BluePrint of a PI pulse 
-
-        args:
-        pulse_to_readout_time (float): time between the end of the PI pulse and the readout
-        marker (bool): include marker   
-        """
-        
-        first_time = self.cycle_time-self.pulse_time-self.readout_time-pulse_to_readout_time 
-        end_time = self.readout_time+pulse_to_readout_time
-        
-        seg_sin = bb.BluePrint()
-        seg_sin.insertSegment(0, ramp, (0, 0), name='first', dur=first_time)
-        seg_sin.insertSegment(1, ramp, (0.05, 0.05), name='pulse', dur=self.pulse_time)
-        seg_sin.insertSegment(2, ramp, (0, 0), name='read', dur=end_time)
-        if marker:
-            seg_sin.marker1 = [(first_time+self.pulse_time+self.marker_offset+pulse_to_readout_time, self.cycle_time)]
-        seg_sin.setSR(self.SR.get())
-        
-        return seg_sin   
 
     def seg_gausian(self,
                     pulse_to_readout_time:float = 0,
