@@ -12,7 +12,8 @@ readme_file_path = Path(__file__).absolute().parent / "README.md"
 required_packages = ['qcodes>=0.21.0',
                     'qdev_wrappers @ git+https://github.com/qdev-dk/qdev-wrappers@master#egg=qdev_wrappers',
                     'PyQt5',
-                    'scipy']
+                    'scipy',
+                     'pythonnet']
 package_data = {"sequencebuilder": ["conf/telemetry.ini"] }
 
 
