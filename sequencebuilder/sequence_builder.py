@@ -95,7 +95,7 @@ class SequenceBuilder(BagOfBeans):
         self.seq.set_all_channel_amplitude_offset(amplitude=1, offset=0)
    
 
-    def MultiQ_Lifetime_overlap(self, start:float, stop:float, npts:int) -> None:
+    def MultiQ_Lifetime_overlap_variation(self, start:float, stop:float, npts:int) -> None:
         """ 
         Updates the broadbean sequence so it contains one channels containing a pi-pulse
         varying the time between the end of the pi-pulse and the readout
@@ -123,6 +123,35 @@ class SequenceBuilder(BagOfBeans):
       
         self.seq.set_all_channel_amplitude_offset(amplitude=1, offset=0)
         
+
+    def MultiQ_Lifetime_overlap(self, start:float, stop:float, npts:int,overlap_time:float) -> None:
+        """ 
+        Updates the broadbean sequence so it contains one channels containing a pi-pulse
+        varying the time between the end of the pi-pulse and the readout
+        and two channels for the readout for IQ mixing 
+        
+            args:
+            start (float): Starting point of the delta time
+            stop (float): Endpoint point of the delta time
+            npts (int): Number of point in the time interval
+        """
+        
+        self.seq.empty_sequence()
+        readout_freq = self.readout_freq_1.get()
+        pulse_to_readout_time = np.linspace(start,stop,npts)
+        readout_freq = self.readout_freq_1.get() #- self.cavity.frequency()
+        for i,delta_time in enumerate(pulse_to_readout_time):
+            self.elem = bb.Element()
+            seg_pi = self.seg_pi_overlap(delta_time,overlap_time)
+            self.elem.addBluePrint(1, seg_pi)
+            self.elem_add_readout_pulse(readout_freq)
+            self.seq.seq.addElement(i+1,self.elem)
+
+            self.seq_settings_infinity_loop(i+1,npts)
+        self.seq.seq.setSR(self.SR.get())
+      
+        self.seq.set_all_channel_amplitude_offset(amplitude=1, offset=0) 
+
     def test_station(self, start:float, stop:float, npts:int,channel: int) -> None:
         """ 
         Updates the broadbean sequence so it containsone channel with a sine pulse for an array of  frequencies
@@ -170,6 +199,33 @@ class SequenceBuilder(BagOfBeans):
         seg_sin.setSR(self.SR.get())
         
         return seg_sin
+
+    def seg_pi_overlap(self,
+                       pulse_time:float = 0, overlap_time:float = 0) -> bb.BluePrint:
+        """
+        Returns a broadbean BluePrint of a PI pulse 
+
+        args:
+        pulse_to_readout_time (float): time between the end of the PI pulse and the readout  
+        """
+        
+        first_time = self.cycle_time-pulse_time-self.readout_time + overlap_time
+        end_time = self.cycle_time -first_time - pulse_time 
+        
+        seg_sin = bb.BluePrint()
+        if pulse_time < 2/self.SR.get():
+            seg_sin.insertSegment(0, ramp, (0, 0), name='first', dur=(first_time+pulse_time)/2.0)
+            seg_sin.insertSegment(1, ramp, (0.0, 0.0), name='pulse', dur=(first_time+pulse_time)/2.0)
+            seg_sin.insertSegment(2, ramp, (0, 0), name='read', dur=end_time)
+        else:
+            seg_sin.insertSegment(0, ramp, (0, 0), name='first', dur=first_time)
+            seg_sin.insertSegment(1, ramp, (0.25, 0.25), name='pulse', dur=pulse_time)
+            seg_sin.insertSegment(2, ramp, (0, 0), name='read', dur=end_time)
+        seg_sin.marker1 = [(first_time+pulse_time+self.marker_offset, self.cycle_time)]
+        seg_sin.setSR(self.SR.get())
+        
+        return seg_sin        
+    
 
     def seg_pi(self,
                 pulse_to_readout_time:float = 0) -> bb.BluePrint:
