@@ -64,6 +64,10 @@ class SequenceBuilder(BagOfBeans):
                         unit='Hz',
                         set_cmd= lambda x : x,
                         vals=vals.Numbers(0,12.5e9))
+        self.add_parameter(x_val,
+                            label=''
+                            unit=''
+                            )
 
     def MultiQ_SSB_Spec_NoOverlap(self, start:float, stop:float, npts:int) -> None:
         """ 
@@ -78,7 +82,7 @@ class SequenceBuilder(BagOfBeans):
         self.seq.empty_sequence()
         freq_interval = np.linspace(start,stop,npts)
         readout_freq = self.readout_freq_1.get() #- self.cavity.frequency()
-
+        self.x_val = freq_interval
         for i,f in enumerate(freq_interval):
             self.elem = bb.Element()
             if i == 0:
