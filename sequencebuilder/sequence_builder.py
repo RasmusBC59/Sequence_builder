@@ -64,9 +64,11 @@ class SequenceBuilder(BagOfBeans):
                         unit='Hz',
                         set_cmd= lambda x : x,
                         vals=vals.Numbers(0,12.5e9))
-        self.add_parameter(x_val,
-                            label=''
-                            unit=''
+        self.add_parameter('x_val',
+                            label='',
+                            unit='',
+                            get_cmd=None,
+                            set_cmd=None
                             )
 
     def MultiQ_SSB_Spec_NoOverlap(self, start:float, stop:float, npts:int) -> None:
@@ -79,10 +81,12 @@ class SequenceBuilder(BagOfBeans):
             stop (float): Endpoint point of the frequency interval
             npts (int): Number of point in the frequency interval
         """
+        readout_freq = self.readout_freq_1.get() #- self.cavity.frequency()
         self.seq.empty_sequence()
         freq_interval = np.linspace(start,stop,npts)
-        readout_freq = self.readout_freq_1.get() #- self.cavity.frequency()
-        self.x_val = freq_interval
+        self.x_val.set(freq_interval)
+        self.x_val.unit = 'Hz'
+        self.x_val.label = 'Frequence'
         for i,f in enumerate(freq_interval):
             self.elem = bb.Element()
             if i == 0:
@@ -115,7 +119,11 @@ class SequenceBuilder(BagOfBeans):
         self.seq.empty_sequence()
         readout_freq = self.readout_freq_1.get()
         pulse_to_readout_time = np.linspace(start,stop,npts)
-        readout_freq = self.readout_freq_1.get() #- self.cavity.frequency()
+
+        self.x_val.set(pulse_to_readout_time)
+        self.x_val.unit = 's'
+        self.x_val.label = 'Time'
+
         for i,delta_time in enumerate(pulse_to_readout_time):
             self.elem = bb.Element()
             if i == 0:
@@ -146,7 +154,10 @@ class SequenceBuilder(BagOfBeans):
         self.seq.empty_sequence()
         readout_freq = self.readout_freq_1.get()
         pulse_to_readout_time = np.linspace(start,stop,npts)
-        readout_freq = self.readout_freq_1.get() #- self.cavity.frequency()
+        self.x_val.set(pulse_to_readout_time)
+        self.x_val.unit = 's'
+        self.x_val.label = 'Time'
+
         for i,delta_time in enumerate(pulse_to_readout_time):
             self.elem = bb.Element()
             if i == 0:
@@ -178,7 +189,10 @@ class SequenceBuilder(BagOfBeans):
         self.seq.empty_sequence()
         readout_freq = self.readout_freq_1.get()
         sigma_interval = np.linspace(start,stop,npts)
-        readout_freq = self.readout_freq_1.get() #- self.cavity.frequency()
+        self.x_val.set(sigma_interval)
+        self.x_val.unit = 's'
+        self.x_val.label = 'Time'
+
         for i,sigma in enumerate(sigma_interval):
             self.elem = bb.Element()
             if i == 0:
