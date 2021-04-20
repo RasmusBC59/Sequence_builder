@@ -172,6 +172,34 @@ class SequenceBuilder(BagOfBeans):
         self.seq.seq.setSR(self.SR.get())
       
         self.seq.set_all_channel_amplitude_offset(amplitude=1, offset=0)
+
+    def test(self, start:float, stop:float, npts:int, overlap_time:float) -> None:
+        """ 
+            args:
+            start (float): Starting point of the frequency interval
+            stop (float): Endpoint point of the frequency interval
+            npts (int): Number of point in the frequency interval
+        """
+        readout_freq = self.readout_freq_1.get() 
+        self.seq.empty_sequence()
+        freq_interval = np.linspace(start,stop,npts)
+        self.x_val.set(freq_interval)
+        self.x_val.unit = 'Hz'
+        self.x_val.label = 'Frequence'
+        for i,f in enumerate(freq_interval):
+            self.elem = bb.Element()
+            if i == 0:
+                seg_sin = self.seg_sine(frequency = f,marker=True)
+            else:
+                seg_sin = self.seg_sine(frequency = f, marker=False)
+            seg_cos = self.seg_sine(frequency = f, phase=np.pi/2)
+            self.elem.addBluePrint(1, seg_sin)
+            self.elem.addBluePrint(2, seg_cos)
+            self.elem_add_readout_pulse(f)
+            self.seq.seq.addElement(i+1, self.elem)
+            self.seq_settings_infinity_loop(i+1,npts)
+        self.seq.seq.setSR(self.SR.get())
+        self.seq.set_all_channel_amplitude_offset(amplitude=1, offset=0)
    
 
     def give_me_a_name(self, start:float, stop:float, npts:int) -> None:
