@@ -1,5 +1,5 @@
 
-def alazarconfig(alazar, seqmode=False,external_clock=False):
+def alazarconfig(alazar, seqmode=False,external_clock=False,sample_rate=1_000_000_000):
     """
     function for config of alazar
     """
@@ -9,7 +9,7 @@ def alazarconfig(alazar, seqmode=False,external_clock=False):
             alazar.external_sample_rate(500_000_000)
         else:
             alazar.clock_source('INTERNAL_CLOCK')
-            alazar.sample_rate(1_000_000_000)
+            alazar.sample_rate(sample_rate)
         alazar.clock_edge('CLOCK_EDGE_RISING')
         alazar.decimation(1)
         alazar.coupling1('DC')
