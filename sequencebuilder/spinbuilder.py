@@ -35,7 +35,7 @@ class SpinBuilder(BagOfBeans):
             #elem = elem_int_to_zero(elem)
             self.seq.seq.addElement(i+1, elem)
             self.seq.seq.setSR(1.2e9)
-            self.seq.set_all_channel_amplitude_offset(amplitude=1, offset=0)
+            self.seq.set_all_channel_amplitude_offset(amplitude=4.5, offset=0)
             self.seq_settings_infinity_loop(i+1,len_eta)
 
 
@@ -62,7 +62,7 @@ class SpinBuilder(BagOfBeans):
             #elem = elem_int_to_zero(elem)
             self.seq.seq.addElement(i+1, elem)
             self.seq.seq.setSR(1.2e9)
-            self.seq.set_all_channel_amplitude_offset(amplitude=1, offset=0)
+            self.seq.set_all_channel_amplitude_offset(amplitude=4.5, offset=0)
             self.seq_settings_infinity_loop(i+1,len_eta)
 
     def spin_funnel_blue_print(self, a1, a2, a3, eta, readout, a5, a6):
@@ -106,10 +106,10 @@ class AWGController(SpinBuilder):
         if '5014' in str(self.awg.__class__):
             #for i,  chan in enumerate(self.seq.get().channels):
             #    self.awg.channels[chan].AMP(float(chbox[chan-1].text()))
-            self.awg.ch1_amp(awg_amp[0])
-            self.awg.ch2_amp(awg_amp[1])
-            self.awg.ch3_amp(awg_amp[2])
-            self.awg.ch4_amp(awg_amp[3])
+            self.awg.ch1_amp(4.5)
+            self.awg.ch2_amp(4.5)
+            self.awg.ch3_amp(4.5)
+            self.awg.ch4_amp(4.5)
             package = self.seq.get().outputForAWGFile()
             start_time = time.time()
             self.awg.make_send_and_load_awg_file(*package[:])
