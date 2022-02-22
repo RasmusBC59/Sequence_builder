@@ -1,12 +1,7 @@
 
 import broadbean as bb
 import numpy as np
-import numpy as np
-import pandas as pd
-import panel as pn
 
-#pn.extension('tabulator')
-import matplotlib.pyplot as plt
 
 ramp = bb.PulseAtoms.ramp
 
@@ -14,7 +9,7 @@ ramp = bb.PulseAtoms.ramp
 def strtolist(s):
     values = [float(i) for i in s.split(',')]
     if len(values) == 3:
-        values[-1] = int(values[-1]) 
+        values[-1] = int(values[-1])
     return values
 
 
@@ -34,7 +29,6 @@ def iflistorstr(val):
 
 
 def getvoltvalues(volt, i=None):
-    print('type', type(volt), i, volt)
     if isinstance(volt, (int, float)):
         print('hep')
         return (volt, volt)
@@ -44,12 +38,10 @@ def getvoltvalues(volt, i=None):
             return tuple(volt)
         elif len(volt) == 3:
             values = np.linspace(*volt, endpoint=True)
-            return (values[i],values[i])
+            return (values[i], values[i])
 
 
 def get_time(t, i=None):
-    #print('type', type(t))
-    #print(t)
     if type(t) in (list, str):
         t = list_or_sting(t)
         values = np.linspace(*t, endpoint=True)
@@ -59,20 +51,22 @@ def get_time(t, i=None):
 
 
 def find_channels(df):
-    return [ch for  ch in df.columns.values if 'ch' in ch]
+    return [ch for ch in df.columns.values if 'ch' in ch]
 
 
 def find_recurcive(df):
-    col_to_tjek  = find_channels(df)
-    col_to_tjek.append('time') 
-    bla = []
-    for col in col_to_tjek: 
-        bla += [list_or_sting(x)  for x in df[col].values if type(x) in [list,str] and len(list_or_sting(x)) == 3]
+    col_to_tjek = find_channels(df)
+    col_to_tjek.append('time')
+    list_of_lists = []
+    for col in col_to_tjek:
+        list_of_lists += [list_or_sting(x) for x in df[col].values
+                          if type(x) in [list, str]
+                          and len(list_or_sting(x)) == 3]
     ln = []
-    for l in bla:
-        ln.append(int(l[-1]))
-    [x for x in ln if x==ln[0]] == ln
-    return ln[0] 
+    for li in list_of_lists:
+        ln.append(int(li[-1]))
+    [x for x in ln if x == ln[0]] == ln
+    return ln[0]
 
 
 def df_to_seq(df):
