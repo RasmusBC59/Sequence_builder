@@ -1,7 +1,9 @@
 import broadbean as bb
+import pandas as pd
 from qcodes import validators as vals
 from sequencebuilder.alazar_config import alazarconfig
 from sequencebuilder.back_of_beans import BagOfBeans
+from sequencebuilder.dfsequence import df_to_seq
 import time
 ramp = bb.PulseAtoms.ramp
 
@@ -11,6 +13,28 @@ class SpinBuilder(BagOfBeans):
 
     def __init__(self,name:str, **kwargs):
         super().__init__(name, **kwargs)
+        self.df = None
+    
+    def seq_from_df(self):
+        self.seq.seq = df_to_seq(self.df)
+        self.seq.set_all_channel_amplitude_offset(amplitude=4.5, offset=0)
+        self.seq.seq_settings_infinity_loop(i+1,len_eta)
+
+    def spinfunnel(self):
+        self.df = pd.DataFrame({
+                                'name' : ['a','b','c','eta', 'read','d','refrence'],
+                                'time': [1, 1, 1, 1, 1, 1, 1],
+                                'type': ['ramp', 'ramp', 'ramp','ramp', 'ramp', 'ramp', 'ramp'],
+                                'ch1': [0.0, [0.0,0.5], 0.5, [0.5,-2,3], 0.5, [0.5,0.8],0.8],
+                                'ch2': [0.0, [0.0,0.5], 0.5, [0.5,-2,3], 0.5, [0.5,0.8],0.8],
+                                'm11': [False, False, False, False, True, False, False],
+                                'm21' : [False, False, False, False, False, False, False],
+                                'm12': [False, False, False, False, False, False, False],
+                                'm22' : [False, False, False, False, False, False, False]
+                                }, index=[1, 2, 3, 4, 5, 6, 7])
+        self.seq_from_df()
+
+
 
     def spin_funnel_seq(self, a1, a2, a3, eta, readout, a5, a6):
 
@@ -39,19 +63,38 @@ class SpinBuilder(BagOfBeans):
             self.seq_settings_infinity_loop(i+1,len_eta)
 
 
-    def exchange_seq_oneD(self, a1, a2, a3, eta, readout, a5, a6):
+    def exchange_seq_oneD(self, a1, a2, a3, a4, eta, a5, a6, a7,
+                          readout, a8, a9):
 
         self.seq.empty_sequence()
         len_eta = len(eta[2])
         for i in range(len_eta):
             elem = bb.Element()
-            bp = self.spin_funnel_blue_print((a1[0], a1[2]), (a2[0], a2[2]), (a3[0], a3[2]),
-                                        (eta[0], eta[2][i]), (readout[0],readout[2]), (a5[0], a5[2]), (a6[0], a6[2]))
+            bp = self.spin_exchange_blue_print((a1[0], a1[2]),
+                                               (a2[0], a2[2]),
+                                               (a3[0], a3[2]),
+                                               (a4[0], a4[2]),
+                                               (eta[0], eta[2][i]),
+                                               (a5[0], a5[2]),
+                                               (a6[0], a6[2]),
+                                               (a7[0], a7[2]),
+                                               (readout[0], readout[2]),
+                                               (a8[0], a8[2]),
+                                               (a9[0], a9[2]))
             bp.setSegmentMarker('readout', (0.0, 0.5e-6), 1)
             bp = self.bp_int_to_zero(bp)
 
-            bp2 = self.spin_funnel_blue_print((a1[1], a1[2]), (a2[1], a2[2]), (a3[1], a3[2]),
-                                         (eta[1], eta[2][i]), (readout[1], readout[2]), (a5[1], a5[2]), (a6[1], a6[2]))
+            bp2 = self.spin_exchange_blue_print((a1[0], a1[2]),
+                                                (a2[0], a2[2]),
+                                                (a3[0], a3[2]),
+                                                (a4[0], a4[2]),
+                                                (eta[0], eta[2][i]),
+                                                (a5[0], a5[2]),
+                                                (a6[0], a6[2]),
+                                                (a7[0], a7[2]),
+                                                (readout[0], readout[2]),
+                                                (a8[0], a8[2]),
+                                                (a9[0], a9[2]))
             bp2 = self.bp_int_to_zero(bp2)
             if i == 0:
                 bp2.setSegmentMarker('aa', (0.0, 0.5e-6), 1)
@@ -76,6 +119,23 @@ class SpinBuilder(BagOfBeans):
         bp.insertSegment(6, ramp, (a6[0], a6[0]), name='ae', dur=a6[1])
         return bp
 
+    def spin_exchange_blue_print(self, a1, a2, a3, a4, eta, a5, a6, a7,
+                                 readout, a8, a9):
+        bp = bb.BluePrint()
+        bp.insertSegment(0, ramp, (a1[0], a1[0]), name='aa', dur=a1[1])
+        bp.insertSegment(1, ramp, (a1[0], a2[0]), name='ab', dur=a2[1])
+        bp.insertSegment(2, ramp, (a2[0], a3[0]), name='ac', dur=a3[1])
+        bp.insertSegment(3, ramp, (a4[0], a4[0]), name='ad', dur=a4[1])
+        bp.insertSegment(4, ramp, (eta[0], eta[0]), name='eta', dur=eta[1])
+        bp.insertSegment(5, ramp, (a5[0], a5[0]), name='ae', dur=a5[1])
+        bp.insertSegment(6, ramp, (a5[0], a6[0]), name='af', dur=a6[1])
+        bp.insertSegment(7, ramp, (a6[0], a7[0]), name='ag', dur=a7[1])
+        bp.insertSegment(8, ramp, (readout[0], readout[0]), name='readout', dur=readout[1])
+        bp.insertSegment(9, ramp, (readout[0], a8[0]), name='ah', dur=a8[1])
+        bp.insertSegment(10, ramp, (a8[0], a9[0]), name='ai', dur=a9[1])
+
+        return bp
+
     def bp_int_to_zero(self,bp):
         num_seg = self.number_of_segments(bp)
         tottime = 0
@@ -89,7 +149,7 @@ class SpinBuilder(BagOfBeans):
         timeD = tottime/1.65
         voltD = -tottimevolt/timeD
 
- 
+
         bp.insertSegment(num_seg, ramp, (voltD, voltD),
                             name='CorretD', dur=timeD)
         return bp
