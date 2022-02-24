@@ -84,17 +84,17 @@ class SpinBuilder(BagOfBeans):
             bp.setSegmentMarker('readout', (0.0, 0.5e-6), 1)
             bp = self.bp_int_to_zero(bp)
 
-            bp2 = self.spin_exchange_blue_print((a1[0], a1[2]),
-                                                (a2[0], a2[2]),
-                                                (a3[0], a3[2]),
-                                                (a4[0], a4[2]),
-                                                (eta[0], eta[2][i]),
-                                                (a5[0], a5[2]),
-                                                (a6[0], a6[2]),
-                                                (a7[0], a7[2]),
-                                                (readout[0], readout[2]),
-                                                (a8[0], a8[2]),
-                                                (a9[0], a9[2]))
+            bp2 = self.spin_exchange_blue_print((a1[1], a1[2]),
+                                                (a2[1], a2[2]),
+                                                (a3[1], a3[2]),
+                                                (a4[1], a4[2]),
+                                                (eta[1], eta[2][i]),
+                                                (a5[1], a5[2]),
+                                                (a6[1], a6[2]),
+                                                (a7[1], a7[2]),
+                                                (readout[1], readout[2]),
+                                                (a8[1], a8[2]),
+                                                (a9[1], a9[2]))
             bp2 = self.bp_int_to_zero(bp2)
             if i == 0:
                 bp2.setSegmentMarker('aa', (0.0, 0.5e-6), 1)
