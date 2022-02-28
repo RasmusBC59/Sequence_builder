@@ -65,6 +65,27 @@ class ParSeq(Parameter):
             self.seq.setChannelAmplitude(chan, amplitude)
             self.seq.setChannelOffset(chan, offset)
 
+    def number_of_elements(self):
+        return len(self.seq.description.keys())-1
+
+    def seq_settings_infinity_loop(self) -> None:
+        """
+        Play element 1 time and go to the next,
+        except if you are the last element, then play 1 time and go to the first Element.
+        """
+        elementlist = list(self.seq.description.keys())[:-1]
+        last_elem_nr = elementlist[-1]
+        for elem_nr in elementlist:
+            elem_nr = int(elem_nr)
+            self.seq.setSequencingTriggerWait(elem_nr, 0)
+            self.seq.setSequencingNumberOfRepetitions(elem_nr, 1)
+            self.seq.setSequencingEventJumpTarget(elem_nr, 0)
+            if elem_nr == last_elem_nr:
+                self.seq.setSequencingGoto(elem_nr, 1)
+            else:
+                self.seq.setSequencingGoto(elem_nr, 0)
+
+
     def plot(self):
         plotter(self.seq)
 
