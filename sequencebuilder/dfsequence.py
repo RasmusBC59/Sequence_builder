@@ -6,7 +6,7 @@ import numpy as np
 ramp = bb.PulseAtoms.ramp
 
 
-def df_to_seq(df):
+def df_to_seq(df,seg_mode_trig=False):
     seq = bb.Sequence()
     nr_elem = find_recurcive(df)
     chan_list = find_channels(df)
@@ -27,6 +27,8 @@ def df_to_seq(df):
                 bp.insertSegment(i, ramp, volt, name=nm, dur=dr)
                 add_marker(bp, df, i, chnr, 1, nm, dr)
                 add_marker(bp, df, i, chnr, 2, nm, dr)
+                if chnr == 2 and h == 0 and seg_mode_trig and i == 0:
+                    bp.setSegmentMarker(nm, (0.0, 0.5e-6), 1)
             elem.addBluePrint(chnr, bp)
         seq.addElement(h+1, elem)
     seq.setSR(1.2e9)
