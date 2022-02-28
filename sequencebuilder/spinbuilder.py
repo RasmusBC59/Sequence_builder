@@ -16,9 +16,9 @@ class SpinBuilder(BagOfBeans):
         self.df = None
     
     def seq_from_df(self):
-        self.seq.seq = df_to_seq(self.df)
+        self.seq.seq = df_to_seq(self.df, seg_mode_trig=True)
         self.seq.set_all_channel_amplitude_offset(amplitude=4.5, offset=0)
-        self.seq.seq_settings_infinity_loop(i+1,len_eta)
+        self.seq.seq_settings_infinity_loop()
 
     def spinfunnel(self):
         self.df = pd.DataFrame({
