@@ -112,7 +112,7 @@ class SpinBuilder(BagOfBeans):
                           readout, a8, a9):
 
         self.seq.empty_sequence()
-        len_eta = len(eta[2])
+        len_eta = len(eta[0])
         for i in range(len_eta):
             elem = bb.Element()
             bp = self.spin_exchange_blue_print((a1[0], a1[2]),
