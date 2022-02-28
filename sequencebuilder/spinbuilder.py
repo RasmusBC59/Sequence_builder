@@ -108,6 +108,51 @@ class SpinBuilder(BagOfBeans):
             self.seq.set_all_channel_amplitude_offset(amplitude=4.5, offset=0)
             self.seq_settings_infinity_loop(i+1,len_eta)
 
+    def exchange_seq_oneD_volt(self, a1, a2, a3, a4, eta, a5, a6, a7,
+                          readout, a8, a9):
+
+        self.seq.empty_sequence()
+        len_eta = len(eta[2])
+        for i in range(len_eta):
+            elem = bb.Element()
+            bp = self.spin_exchange_blue_print((a1[0], a1[2]),
+                                               (a2[0], a2[2]),
+                                               (a3[0], a3[2]),
+                                               (a4[0], a4[2]),
+                                               (eta[0][i], eta[2]),
+                                               (a5[0], a5[2]),
+                                               (a6[0], a6[2]),
+                                               (a7[0], a7[2]),
+                                               (readout[0], readout[2]),
+                                               (a8[0], a8[2]),
+                                               (a9[0], a9[2]))
+            bp.setSegmentMarker('readout', (0.0, 0.5e-6), 1)
+            bp = self.bp_int_to_zero(bp)
+
+            bp2 = self.spin_exchange_blue_print((a1[1], a1[2]),
+                                                (a2[1], a2[2]),
+                                                (a3[1], a3[2]),
+                                                (a4[1], a4[2]),
+                                                (eta[1][i], eta[2]),
+                                                (a5[1], a5[2]),
+                                                (a6[1], a6[2]),
+                                                (a7[1], a7[2]),
+                                                (readout[1], readout[2]),
+                                                (a8[1], a8[2]),
+                                                (a9[1], a9[2]))
+            bp2 = self.bp_int_to_zero(bp2)
+            if i == 0:
+                bp2.setSegmentMarker('aa', (0.0, 0.5e-6), 1)
+            bp.setSR(1.2e9)
+            bp2.setSR(1.2e9)
+            elem.addBluePrint(1, bp)
+            elem.addBluePrint(2, bp2)
+            #elem = elem_int_to_zero(elem)
+            self.seq.seq.addElement(i+1, elem)
+            self.seq.seq.setSR(1.2e9)
+            self.seq.set_all_channel_amplitude_offset(amplitude=4.5, offset=0)
+            self.seq_settings_infinity_loop(i+1,len_eta)
+
     def spin_funnel_blue_print(self, a1, a2, a3, eta, readout, a5, a6):
         bp = bb.BluePrint()
         bp.insertSegment(0, ramp, (a1[0], a1[0]), name='aa', dur=a1[1])
