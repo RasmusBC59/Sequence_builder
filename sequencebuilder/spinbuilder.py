@@ -16,7 +16,7 @@ class SpinBuilder(BagOfBeans):
         self.df = None
     
     def seq_from_df(self):
-        self.seq.seq = df_to_seq(self.df, seg_mode_trig=True)
+        self.seq.seq = df_to_seq(self.df, seg_mode_trig=True, int_to_zero=True)
         self.seq.set_all_channel_amplitude_offset(amplitude=4.5, offset=0)
         self.seq.seq_settings_infinity_loop()
 
@@ -25,8 +25,8 @@ class SpinBuilder(BagOfBeans):
                                 'name' : ['a','b','c','eta', 'read','d','refrence'],
                                 'time': [1, 1, 1, 1, 1, 1, 1],
                                 'type': ['ramp', 'ramp', 'ramp','ramp', 'ramp', 'ramp', 'ramp'],
-                                'ch1': [0.0, [0.0,0.5], 0.5, [0.5,-2,3], 0.5, [0.5,0.8],0.8],
-                                'ch2': [0.0, [0.0,0.5], 0.5, [0.5,-2,3], 0.5, [0.5,0.8],0.8],
+                                'ch1': [0.0, [0.0,0.25], 0.25, [0.25,-0.2,100], 0.25, [0.25,0.28],0.28],
+                                'ch2': [0.0, [0.0,0.25], 0.25, [0.25,-0.2,100], 0.25, [0.25,0.28],0.28],
                                 'm11': [False, False, False, False, True, False, False],
                                 'm21' : [False, False, False, False, False, False, False],
                                 'm12': [False, False, False, False, False, False, False],
