@@ -74,7 +74,7 @@ class ParSeq(Parameter):
         except if you are the last element, then play 1 time and go to the first Element.
         """
         elementlist = list(self.seq.description.keys())[:-1]
-        last_elem_nr = elementlist[-1]
+        last_elem_nr = int(elementlist[-1])
         for elem_nr in elementlist:
             elem_nr = int(elem_nr)
             self.seq.setSequencingTriggerWait(elem_nr, 0)
