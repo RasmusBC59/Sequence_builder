@@ -6,7 +6,7 @@ import numpy as np
 ramp = bb.PulseAtoms.ramp
 
 
-def df_to_seq(df,seg_mode_trig=False):
+def df_to_seq(df, seg_mode_trig=False, int_to_zero=False):
     seq = bb.Sequence()
     nr_elem = find_recurcive(df)
     chan_list = find_channels(df)
@@ -29,6 +29,8 @@ def df_to_seq(df,seg_mode_trig=False):
                 add_marker(bp, df, i, chnr, 2, nm, dr)
                 if chnr == 2 and h == 0 and seg_mode_trig and i == 0:
                     bp.setSegmentMarker(nm, (0.0, 0.5e-6), 1)
+            if int_to_zero:
+                bp = bp_int_to_zero(bp)
             elem.addBluePrint(chnr, bp)
         seq.addElement(h+1, elem)
     seq.setSR(1.2e9)
@@ -69,6 +71,8 @@ def getvoltvalues(volt, i=None):
         elif len(volt) == 3:
             values = np.linspace(*volt, endpoint=True)
             return (values[i], values[i])
+        elif len(volt) == 1:
+            return (volt[0], volt[0])
 
 
 def get_time(t, i=None):
@@ -100,3 +104,25 @@ def strtolist(s):
     if len(values) == 3:
         values[-1] = int(values[-1])
     return values
+
+def bp_int_to_zero(bp):
+    num_seg = number_of_segments(bp)
+    tottime = 0
+    tottimevolt = 0
+    for i in range(num_seg):
+        pulsestart = bp.description['segment_%02d'%(i+1)]['arguments']['start']
+        pulsestop = bp.description['segment_%02d'%(i+1)]['arguments']['stop']
+        pulsedur = bp.description['segment_%02d'%(i+1)]['durations']
+        tottime += pulsedur
+        tottimevolt += pulsedur*(pulsestart+pulsestop)/2
+    timeD = tottime/1.65
+    voltD = -tottimevolt/timeD
+
+
+    bp.insertSegment(num_seg, ramp, (voltD, voltD),
+                        name='CorretD', dur=timeD)
+    return bp
+
+def number_of_segments(bp):
+    nr = len(bp.description)-4
+    return nr
