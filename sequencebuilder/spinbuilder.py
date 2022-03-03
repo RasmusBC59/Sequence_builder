@@ -206,6 +206,20 @@ class SpinBuilder(BagOfBeans):
         nr = len(bp.description)-4
         return nr
 
+    def update_seq_from_list(self, x, y, ramp):
+        self.update_df_from_list(x, y, ramp)
+        self.seq_from_df()
+
+    def update_df_from_list(self, x, y, ramp):
+        for i in range(len(x)):
+            if ramp[i] and i!=0:
+                self.df.loc[i+1, f'ch{self.ch_x}'] = f'{x[i-1]:.2f}, {x[i]:.2f}'
+                self.df.loc[i+1, f'ch{self.ch_y}'] = f'{x[i-1]:.2f}, {x[i]:.2f}'
+            else:
+                self.df.loc[i+1, f'ch{self.ch_x}'] = f'{x[i]:.2f}'
+                self.df.loc[i+1, f'ch{self.ch_y}'] = f'{y[i]:.2f}'
+ 
+
 class AWGController(SpinBuilder):
     def __init__(self, name: str, awg=None, **kwargs):
         super().__init__(name, **kwargs)
