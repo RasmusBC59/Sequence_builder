@@ -6,7 +6,7 @@ import numpy as np
 ramp = bb.PulseAtoms.ramp
 
 
-def df_to_seq(df, seg_mode_trig=False, int_to_zero=False):
+def df_to_seq(df, divider, seg_mode_trig=False, int_to_zero=False):
     seq = bb.Sequence()
     nr_elem = find_recurcive(df)
     chan_list = find_channels(df)
@@ -15,13 +15,14 @@ def df_to_seq(df, seg_mode_trig=False, int_to_zero=False):
     for h in range(nr_elem):
         elem = bb.Element()
         for ch in chan_list:
+            div = divider[ch]
             chnr = int(ch[2:])
             bp = bb.BluePrint()
             bp.setSR(1.2e9)
             for i in range(idnr):
                 nm = df.iloc[i][['name']].values[0]
                 volt = df.iloc[i][[ch]].values[0]
-                volt = getvoltvalues(volt, h)
+                volt = getvoltvalues(volt, h, div)
                 dr = df.iloc[i][['time']].values[0]
                 dr = get_time(dr, h)*1e-6
                 bp.insertSegment(i, ramp, volt, name=nm, dur=dr)
@@ -53,6 +54,8 @@ def find_recurcive(df):
     ln = []
     for li in list_of_lists:
         ln.append(int(li[-1]))
+    if ln == []:
+        return 1
     [x for x in ln if x == ln[0]] == ln
     return ln[0]
 
@@ -61,18 +64,18 @@ def find_channels(df):
     return [ch for ch in df.columns.values if 'ch' in ch]
 
 
-def getvoltvalues(volt, i=None):
+def getvoltvalues(volt, i=None, divider=1):
     if isinstance(volt, (int, float)):
-        return (volt, volt)
+        return (volt*divider, volt*divider)
     elif type(volt) in (list, str):
         volt = list_or_sting(volt)
         if len(volt) == 2:
-            return tuple(volt)
+            return tuple(np.array(volt)*divider)
         elif len(volt) == 3:
             values = np.linspace(*volt, endpoint=True)
-            return (values[i], values[i])
+            return (values[i]*divider, values[i]*divider)
         elif len(volt) == 1:
-            return (volt[0], volt[0])
+            return (volt[0]*divider, volt[0]*divider)
 
 
 def get_time(t, i=None):
@@ -94,9 +97,8 @@ def iflistorstr(val):
 
 def list_or_sting(val):
     if type(val) == str:
-        return strtolist(val)
-    else:
-        return val
+        val = strtolist(val)
+    return val
 
 
 def strtolist(s):

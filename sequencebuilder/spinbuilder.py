@@ -14,23 +14,26 @@ class SpinBuilder(BagOfBeans):
     def __init__(self,name:str, **kwargs):
         super().__init__(name, **kwargs)
         self.df = None
-    
+        self.ch_x = 1
+        self.ch_y = 2
+        self.divider = {f'ch{self.ch_x}': 1, f'ch{self.ch_y}': 1}
+
     def seq_from_df(self):
-        self.seq.seq = df_to_seq(self.df, seg_mode_trig=True, int_to_zero=True)
+        self.seq.seq = df_to_seq(self.df, self.divider, seg_mode_trig=True, int_to_zero=True)
         self.seq.set_all_channel_amplitude_offset(amplitude=4.5, offset=0)
         self.seq.seq_settings_infinity_loop()
 
     def spinfunnel(self):
         self.df = pd.DataFrame({
-                                'name' : ['a','b','c','eta', 'read','d','refrence'],
+                                'name' : ['a', 'b', 'c', 'eta', 'read', 'd', 'refrence'],
                                 'time': [1, 1, 1, 1, 1, 1, 1],
                                 'type': ['ramp', 'ramp', 'ramp','ramp', 'ramp', 'ramp', 'ramp'],
-                                'ch1': [0.0, [0.0,0.25], 0.25, [0.25,-0.2,100], 0.25, [0.25,0.28],0.28],
-                                'ch2': [0.0, [0.0,0.25], 0.25, [0.25,-0.2,100], 0.25, [0.25,0.28],0.28],
-                                'm11': [False, False, False, False, True, False, False],
-                                'm21' : [False, False, False, False, False, False, False],
-                                'm12': [False, False, False, False, False, False, False],
-                                'm22' : [False, False, False, False, False, False, False]
+                                f'ch{self.ch_x}': [0.0, [0.0,0.25], 0.25, [0.25,-0.2,100], 0.25, [0.25,0.28], 0.28],
+                                f'ch{self.ch_y}': [0.0, [0.0,0.25], 0.25, [0.25,-0.2,100], 0.25, [0.25,0.28], 0.28],
+                                f'm{self.ch_x}1': [False, False, False, False, True, False, False],
+                                f'm{self.ch_y}1' : [False, False, False, False, False, False, False],
+                                f'm{self.ch_x}2': [False, False, False, False, False, False, False],
+                                f'm{self.ch_y}2' : [False, False, False, False, False, False, False]
                                 }, index=[1, 2, 3, 4, 5, 6, 7])
         self.seq_from_df()
 
