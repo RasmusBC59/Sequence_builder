@@ -102,6 +102,8 @@ def list_or_sting(val):
 
 
 def strtolist(s):
+    s = s.replace('[', '')
+    s = s.replace(']', '')
     values = [float(i) for i in s.split(',')]
     if len(values) == 3:
         values[-1] = int(values[-1])
