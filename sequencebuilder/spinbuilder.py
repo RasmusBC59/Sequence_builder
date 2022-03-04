@@ -17,6 +17,8 @@ class SpinBuilder(BagOfBeans):
         self.ch_x = 1
         self.ch_y = 2
         self.divider = {f'ch{self.ch_x}': 1, f'ch{self.ch_y}': 1}
+        self.scale = 1e-3
+        self.timescale = 1e-6
 
     def seq_from_df(self):
         self.seq.seq = df_to_seq(self.df, self.divider, seg_mode_trig=True, int_to_zero=True)
