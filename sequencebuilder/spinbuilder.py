@@ -1,5 +1,6 @@
 import broadbean as bb
 import pandas as pd
+import string
 from qcodes import validators as vals
 from sequencebuilder.alazar_config import alazarconfig
 from sequencebuilder.back_of_beans import BagOfBeans
@@ -212,15 +213,40 @@ class SpinBuilder(BagOfBeans):
         self.update_df_from_list(x, y, ramp)
         self.seq_from_df()
 
+    def df_from_list(self, x, y, ramp):
+        dim = len(x)
+        names = list(string.ascii_lowercase)[:dim]
+        times = [1]*dim
+        bbtype = ['ramp']*dim
+        chaninit = [0]*dim
+        markerinit = [False]*dim
+        index = list(range(1,dim+1,1))
+        self.df = pd.DataFrame({
+                                'name' : names,
+                                'time': times,
+                                'type':bbtype,
+                                f'ch{self.ch_x}': chaninit,
+                                f'ch{self.ch_y}': chaninit,
+                                f'm{self.ch_x}1': markerinit,
+                                f'm{self.ch_y}1' : markerinit,
+                                f'm{self.ch_x}2': markerinit,
+                                f'm{self.ch_y}2' : markerinit
+                               }, index = index
+                              )
+        self.update_df_from_list(x, y, ramp)
+
     def update_df_from_list(self, x, y, ramp):
         for i in range(len(x)):
             if ramp[i] and i!=0:
-                self.df.loc[i+1, f'ch{self.ch_x}'] = f'{x[i-1]:.2f}, {x[i]:.2f}'
-                self.df.loc[i+1, f'ch{self.ch_y}'] = f'{x[i-1]:.2f}, {x[i]:.2f}'
+                self.df.loc[i+1, f'ch{self.ch_x}'] = f'{x[i-1]/self.scale:.2f}, {x[i]/self.scale:.2f}'
+                self.df.loc[i+1, f'ch{self.ch_y}'] = f'{x[i-1]/self.scale:.2f}, {x[i]/self.scale:.2f}'
             else:
-                self.df.loc[i+1, f'ch{self.ch_x}'] = f'{x[i]:.2f}'
-                self.df.loc[i+1, f'ch{self.ch_y}'] = f'{y[i]:.2f}'
- 
+                self.df.loc[i+1, f'ch{self.ch_x}'] = f'{x[i]/self.scale:.2f}'
+                self.df.loc[i+1, f'ch{self.ch_y}'] = f'{y[i]/self.scale:.2f}'
+
+
+
+
 
 class AWGController(SpinBuilder):
     def __init__(self, name: str, awg=None, **kwargs):
