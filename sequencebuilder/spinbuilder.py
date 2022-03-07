@@ -5,6 +5,7 @@ from qcodes import validators as vals
 from sequencebuilder.alazar_config import alazarconfig
 from sequencebuilder.back_of_beans import BagOfBeans
 from sequencebuilder.dfsequence import df_to_seq
+from sequencebuilder.dfsequence import list_or_sting
 import time
 ramp = bb.PulseAtoms.ramp
 
@@ -236,13 +237,39 @@ class SpinBuilder(BagOfBeans):
         self.update_df_from_list(x, y, ramp)
 
     def update_df_from_list(self, x, y, ramp):
+        rec_info_x = self.get_recurcive_info(f'ch{self.ch_x}')
+        rec_info_y = self.get_recurcive_info(f'ch{self.ch_y}')
         for i in range(len(x)):
             if ramp[i] and i!=0:
                 self.df.loc[i+1, f'ch{self.ch_x}'] = f'{x[i-1]/self.scale:.2f}, {x[i]/self.scale:.2f}'
-                self.df.loc[i+1, f'ch{self.ch_y}'] = f'{x[i-1]/self.scale:.2f}, {x[i]/self.scale:.2f}'
+                self.df.loc[i+1, f'ch{self.ch_y}'] = f'{y[i-1]/self.scale:.2f}, {y[i]/self.scale:.2f}'
             else:
-                self.df.loc[i+1, f'ch{self.ch_x}'] = f'{x[i]/self.scale:.2f}'
-                self.df.loc[i+1, f'ch{self.ch_y}'] = f'{y[i]/self.scale:.2f}'
+                if rec_info_x[i]:
+                    a = x[i]/self.scale
+                    b = x[i]/self.scale+rec_info_x[i][0]
+                    nr = rec_info_x[i][1]
+                    self.df.loc[i+1, f'ch{self.ch_x}'] = f'{a:.2f},{b:.2f},{nr}'
+                else:
+                    self.df.loc[i+1, f'ch{self.ch_x}'] = f'{x[i]/self.scale:.2f}'
+                if rec_info_y[i]:
+                    a = y[i]/self.scale
+                    b = y[i]/self.scale+rec_info_y[i][0]
+                    nr = rec_info_y[i][1]
+                    self.df.loc[i+1, f'ch{self.ch_y}'] = f'{a:.2f},{b:.2f},{nr}'
+                else:
+                    self.df.loc[i+1, f'ch{self.ch_y}'] = f'{y[i]/self.scale:.2f}'
+
+    def get_recurcive_info(self, ch):
+        # should this function be moved to dfsequence
+        return [self.find_recurcive_info(x) for x in self.df[ch].values]
+
+    def find_recurcive_info(self, x):
+        if type(x) in [list, str] and len(list_or_sting(x)) == 3:
+            rec_list = list_or_sting(x)
+            return [rec_list[1]-rec_list[0], rec_list[2]]
+        else:
+            return 0
+
 
 
 
