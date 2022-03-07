@@ -113,7 +113,39 @@ class SpinBuilder(BagOfBeans):
             self.seq.seq.setSR(1.2e9)
             self.seq.set_all_channel_amplitude_offset(amplitude=4.5, offset=0)
             self.seq_settings_infinity_loop(i+1,len_eta)
+     
+    def dephasing_seq(self, a1, eta, readout, a8, a9):
 
+        self.seq.empty_sequence()
+        len_eta = len(eta[2])
+        for i in range(len_eta):
+            elem = bb.Element()
+            bp = self.spin_dephasing_blue_print((a1[0], a1[2]),
+                                               (eta[0], eta[2][i]),
+                                               (readout[0], readout[2]),
+                                               (a8[0], a8[2]),
+                                               (a9[0], a9[2]))
+            bp.setSegmentMarker('readout', (0.0, 0.5e-6), 1)
+            bp = self.bp_int_to_zero(bp)
+
+            bp2 = self.spin_dephasing_blue_print((a1[1], a1[2]),
+                                                (eta[1], eta[2][i]),
+                                                (readout[1], readout[2]),
+                                                (a8[1], a8[2]),
+                                                (a9[1], a9[2]))
+            bp2 = self.bp_int_to_zero(bp2)
+            if i == 0:
+                bp2.setSegmentMarker('aa', (0.0, 0.5e-6), 1)
+            bp.setSR(1.2e9)
+            bp2.setSR(1.2e9)
+            elem.addBluePrint(1, bp)
+            elem.addBluePrint(2, bp2)
+            #elem = elem_int_to_zero(elem)
+            self.seq.seq.addElement(i+1, elem)
+            self.seq.seq.setSR(1.2e9)
+            self.seq.set_all_channel_amplitude_offset(amplitude=4.5, offset=0)
+            self.seq_settings_infinity_loop(i+1,len_eta)
+       
     def exchange_seq_oneD_volt(self, a1, a2, a3, a4, eta, a5, a6, a7,
                           readout, a8, a9):
 
@@ -184,6 +216,16 @@ class SpinBuilder(BagOfBeans):
         bp.insertSegment(8, ramp, (readout[0], readout[0]), name='readout', dur=readout[1])
         bp.insertSegment(9, ramp, (readout[0], a8[0]), name='ah', dur=a8[1])
         bp.insertSegment(10, ramp, (a8[0], a9[0]), name='ai', dur=a9[1])
+
+        return bp
+    def spin_dephasing_blue_print(self, a1, eta,
+                                     readout, a8, a9):
+        bp = bb.BluePrint()
+        bp.insertSegment(0, ramp, (a1[0], a1[0]), name='aa', dur=a1[1])             
+        bp.insertSegment(1, ramp, (eta[0], eta[0]), name='eta', dur=eta[1])
+        bp.insertSegment(2, ramp, (readout[0], readout[0]), name='readout', dur=readout[1])
+        bp.insertSegment(3, ramp, (readout[0], a8[0]), name='ah', dur=a8[1])
+        bp.insertSegment(4, ramp, (a8[0], a9[0]), name='ai', dur=a9[1])
 
         return bp
 
