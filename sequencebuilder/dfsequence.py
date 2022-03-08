@@ -10,6 +10,7 @@ def df_to_seq(df, divider, seg_mode_trig=False, int_to_zero=False, scale= 1e-3, 
     seq = bb.Sequence()
     nr_elem = find_recurcive(df)
     chan_list = find_channels(df)
+    max_time = sum([smart_max(list_or_sting(t[0])) for t in df[['time']].values])*timescale
     id = df.index.values
     idnr = id.shape[0]
     for h in range(nr_elem):
@@ -31,7 +32,7 @@ def df_to_seq(df, divider, seg_mode_trig=False, int_to_zero=False, scale= 1e-3, 
                 if chnr == 2 and h == 0 and seg_mode_trig and i == 0:
                     bp.setSegmentMarker(nm, (0.0, 0.5e-6), 1)
             if int_to_zero:
-                bp = bp_int_to_zero(bp)
+                bp = bp_int_to_zero(bp, max_time)
             elem.addBluePrint(chnr, bp)
         seq.addElement(h+1, elem)
     seq.setSR(1.2e9)
@@ -75,14 +76,17 @@ def getvoltvalues(volt, i=None, divider=1):
             values = np.linspace(*volt, endpoint=True)
             return (values[i]*divider, values[i]*divider)
         elif len(volt) == 1:
-            return (volt[0]*divider, volt[0]*divider)
+            return (float(volt[0])*divider, float(volt[0])*divider)
 
 
 def get_time(t, i=None):
     if type(t) in (list, str):
         t = list_or_sting(t)
-        values = np.linspace(*t, endpoint=True)
-        return values[i]
+        if len(t) > 1:
+            values = np.linspace(*t, endpoint=True)
+            return values[i]
+        else:
+            return float(t[0])
     else:
         return t
 
@@ -109,7 +113,15 @@ def strtolist(s):
         values[-1] = int(values[-1])
     return values
 
-def bp_int_to_zero(bp):
+def smart_max(x):
+    if type(x) in (int, float, np.int64):
+        return x
+    if len(x)==3:
+        x.pop()
+    return max(x)
+
+
+def bp_int_to_zero(bp, time):
     num_seg = number_of_segments(bp)
     tottime = 0
     tottimevolt = 0
@@ -119,7 +131,7 @@ def bp_int_to_zero(bp):
         pulsedur = bp.description['segment_%02d'%(i+1)]['durations']
         tottime += pulsedur
         tottimevolt += pulsedur*(pulsestart+pulsestop)/2
-    timeD = tottime/1.65
+    timeD = time*1.65 - tottime
     voltD = -tottimevolt/timeD
 
 
