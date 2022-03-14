@@ -21,9 +21,10 @@ class SpinBuilder(BagOfBeans):
         self.divider = {f'ch{self.ch_x}': 1, f'ch{self.ch_y}': 1}
         self.scale = 1e-3
         self.timescale = 1e-6
+        self.marker_time = 500e-9
 
     def seq_from_df(self):
-        self.seq.seq = df_to_seq(self.df, self.divider, seg_mode_trig=True, int_to_zero=True, scale=self.scale, timescale=self.timescale)
+        self.seq.seq = df_to_seq(self.df, self.divider, seg_mode_trig=True, int_to_zero=True, scale=self.scale, timescale=self.timescale, mktime=self.marker_time)
         self.seq.set_all_channel_amplitude_offset(amplitude=4.5, offset=0)
         self.seq.seq_settings_infinity_loop()
 
