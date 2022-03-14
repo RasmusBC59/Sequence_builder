@@ -114,7 +114,7 @@ def strtolist(s):
     return values
 
 def smart_max(x):
-    if type(x) in (int, float, np.int64):
+    if type(x) in (int, float, np.int64, np.float64):
         return x
     if len(x)==3:
         x.pop()

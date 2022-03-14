@@ -288,14 +288,14 @@ class SpinBuilder(BagOfBeans):
             else:
                 if rec_info_x[i]:
                     a = x[i]/self.scale
-                    b = x[i]/self.scale+rec_info_x[i][0]
+                    b = x[i]/self.scale+rec_info_x[1]-rec_info_x[0]
                     nr = rec_info_x[i][1]
                     self.df.loc[i+1, f'ch{self.ch_x}'] = f'{a:.2f},{b:.2f},{nr}'
                 else:
                     self.df.loc[i+1, f'ch{self.ch_x}'] = f'{x[i]/self.scale:.2f}'
                 if rec_info_y[i]:
                     a = y[i]/self.scale
-                    b = y[i]/self.scale+rec_info_y[i][0]
+                    b = y[i]/self.scale+rec_info_y[1]-rec_info_y[0]
                     nr = rec_info_y[i][1]
                     self.df.loc[i+1, f'ch{self.ch_y}'] = f'{a:.2f},{b:.2f},{nr}'
                 else:
@@ -308,13 +308,9 @@ class SpinBuilder(BagOfBeans):
     def find_recurcive_info(self, x):
         if type(x) in [list, str] and len(list_or_sting(x)) == 3:
             rec_list = list_or_sting(x)
-            return [rec_list[1]-rec_list[0], rec_list[2]]
+            return rec_list
         else:
             return 0
-
-
-
-
 
 
 class AWGController(SpinBuilder):
