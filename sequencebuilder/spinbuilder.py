@@ -1,6 +1,7 @@
 import broadbean as bb
 import pandas as pd
 import string
+import numpy as np
 from qcodes import validators as vals
 from sequencebuilder.alazar_config import alazarconfig
 from sequencebuilder.back_of_beans import BagOfBeans
@@ -22,6 +23,7 @@ class SpinBuilder(BagOfBeans):
         self.scale = 1e-3
         self.timescale = 1e-6
         self.marker_time = 500e-9
+        self.zero_point = (0, 0)
 
     def seq_from_df(self):
         self.seq.seq = df_to_seq(self.df, self.divider, seg_mode_trig=True, int_to_zero=True, scale=self.scale, timescale=self.timescale, mktime=self.marker_time)
@@ -280,6 +282,8 @@ class SpinBuilder(BagOfBeans):
         self.update_df_from_list(x, y, ramp)
 
     def update_df_from_list(self, x, y, ramp):
+        x = np.array(x)+self.zero_point[0]
+        y = np.array(y)+self.zero_point[1]
         rec_info_x = self.get_recurcive_info(f'ch{self.ch_x}')
         rec_info_y = self.get_recurcive_info(f'ch{self.ch_y}')
         for i in range(len(x)):
