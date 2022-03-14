@@ -282,8 +282,8 @@ class SpinBuilder(BagOfBeans):
         self.update_df_from_list(x, y, ramp)
 
     def update_df_from_list(self, x, y, ramp):
-        x = np.array(x)+self.zero_point[0]
-        y = np.array(y)+self.zero_point[1]
+        x = np.array(x)-self.zero_point[0]
+        y = np.array(y)-self.zero_point[1]
         rec_info_x = self.get_recurcive_info(f'ch{self.ch_x}')
         rec_info_y = self.get_recurcive_info(f'ch{self.ch_y}')
         for i in range(len(x)):
