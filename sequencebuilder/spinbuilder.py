@@ -24,11 +24,19 @@ class SpinBuilder(BagOfBeans):
         self.timescale = 1e-6
         self.marker_time = 500e-9
         self.zero_point = (0, 0)
+        self.hp_frequency = None
 
     def seq_from_df(self):
         self.seq.seq = df_to_seq(self.df, self.divider, seg_mode_trig=True, int_to_zero=True, scale=self.scale, timescale=self.timescale, mktime=self.marker_time)
         self.seq.set_all_channel_amplitude_offset(amplitude=4.5, offset=0)
         self.seq.seq_settings_infinity_loop()
+        if self.hp_frequency:
+            self.seq.seq.setChannelFilterCompensation(channel=self.ch_x,
+                                                  kind='HP', order=1,
+                                                  f_cut=self.hp_frequency)
+            self.seq.seq.setChannelFilterCompensation(channel=self.ch_y,
+                                                      kind='HP', order=1,
+                                                      f_cut=self.hp_frequency)
 
     def spinfunnel(self):
         self.df = pd.DataFrame({
