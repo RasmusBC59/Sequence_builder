@@ -6,7 +6,7 @@ import numpy as np
 ramp = bb.PulseAtoms.ramp
 
 
-def df_to_seq(df, divider, seg_mode_trig=False, int_to_zero=False, scale= 1e-3, timescale=1e-6, mktime=500e-9):
+def df_to_seq(df, divider, seg_mode_trig=False, int_to_zero=False, scale= 1e-3, timescale=1e-6, marker_time_dic=None):
     seq = bb.Sequence()
     nr_elem = find_recurcive(df)
     chan_list = find_channels(df)
@@ -27,21 +27,31 @@ def df_to_seq(df, divider, seg_mode_trig=False, int_to_zero=False, scale= 1e-3, 
                 dr = df.iloc[i][['time']].values[0]
                 dr = get_time(dr, h)*timescale
                 bp.insertSegment(i, ramp, volt, name=nm, dur=dr)
-                add_marker(bp, df, i, chnr, 1, nm, mktime)
-                add_marker(bp, df, i, chnr, 2, nm, mktime)
+                add_marker(bp, df, i, chnr, 1, nm, dr, marker_time_dic)
+                add_marker(bp, df, i, chnr, 2, nm, dr, marker_time_dic)
                 if chnr == 2 and h == 0 and seg_mode_trig and i == 0:
+                    mktime = marker_time(marker_time_dic, dr, chnr, 1)
                     bp.setSegmentMarker(nm, (0.0, mktime), 1)
             if int_to_zero:
                 bp = bp_int_to_zero(bp, max_time)
             elem.addBluePrint(chnr, bp)
         seq.addElement(h+1, elem)
     seq.setSR(1.2e9)
+    
     return seq
 
 
-def add_marker(bp, df, i, chnr, mnr, nm, dr):
+def add_marker(bp, df, i, chnr, mnr, nm, dr, marker_time_dic):
     if df.iloc[i][[f'm{chnr}{mnr}']].values[0]:
-        bp.setSegmentMarker(nm, (0, dr), mnr)
+        mktime = marker_time(marker_time_dic, dr, chnr, mnr)
+        bp.setSegmentMarker(nm, (0, mktime), mnr)
+
+
+def marker_time(marker_time_dic, dr, chnr, mnr):
+    if marker_time_dic:
+        if marker_time_dic[f'm{chnr}{mnr}']:
+            return marker_time_dic[f'm{chnr}{mnr}']
+    return dr
 
 
 def find_recurcive(df):
