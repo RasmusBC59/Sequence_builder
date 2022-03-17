@@ -6,7 +6,7 @@ import numpy as np
 ramp = bb.PulseAtoms.ramp
 
 
-def df_to_seq(df, divider, seg_mode_trig=False, int_to_zero=False, scale= 1e-3, timescale=1e-6, marker_time_dic=None):
+def df_to_seq(df, divider, seg_mode_trig=False, int_to_zero=False, scale= 1e-3, timescale=1e-6, marker_time_dic=None, SR=1.2e9):
     seq = bb.Sequence()
     nr_elem = find_recurcive(df)
     chan_list = find_channels(df)
@@ -19,7 +19,7 @@ def df_to_seq(df, divider, seg_mode_trig=False, int_to_zero=False, scale= 1e-3, 
             div = divider[ch]*scale
             chnr = int(ch[2:])
             bp = bb.BluePrint()
-            bp.setSR(1.2e9)
+            bp.setSR(SR)
             for i in range(idnr):
                 nm = df.iloc[i][['name']].values[0]
                 volt = df.iloc[i][[ch]].values[0]
@@ -36,7 +36,7 @@ def df_to_seq(df, divider, seg_mode_trig=False, int_to_zero=False, scale= 1e-3, 
                 bp = bp_int_to_zero(bp, max_time)
             elem.addBluePrint(chnr, bp)
         seq.addElement(h+1, elem)
-    seq.setSR(1.2e9)
+    seq.setSR(SR)
     
     return seq
 

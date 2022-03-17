@@ -26,6 +26,7 @@ class BagOfBeans(Instrument):
         self.add_parameter(name='SR',
                            label='sample rate',
                            unit='Hz',
+                           initial_value=1.2e9,
                            parameter_class=sample_rate,
                            snapshot_exclude=True)
 

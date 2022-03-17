@@ -27,7 +27,7 @@ class SpinBuilder(BagOfBeans):
         self.marker_time_dic = {f'm{self.ch_x}1':0,f'm{self.ch_x}2':0,f'm{self.ch_y}1':500e-9,f'm{self.ch_y}2':0}
 
     def seq_from_df(self):
-        self.seq.seq = df_to_seq(self.df, self.divider, seg_mode_trig=True, int_to_zero=True, scale=self.scale, timescale=self.timescale, marker_time_dic=self.marker_time_dic)
+        self.seq.seq = df_to_seq(self.df, self.divider, seg_mode_trig=True, int_to_zero=True, scale=self.scale, timescale=self.timescale, marker_time_dic=self.marker_time_dic, SR=self.SR())
         self.seq.set_all_channel_amplitude_offset(amplitude=4.5, offset=0)
         self.seq.seq_settings_infinity_loop()
         if self.hp_frequency:
@@ -70,13 +70,13 @@ class SpinBuilder(BagOfBeans):
             bp2 = self.bp_int_to_zero(bp2)
             if i == 0:
                 bp2.setSegmentMarker('aa', (0.0, 0.5e-6), 1)
-            bp.setSR(1.2e9)
-            bp2.setSR(1.2e9)
+            bp.setSR(self.SR())
+            bp2.setSR(self.SR())
             elem.addBluePrint(1, bp)
             elem.addBluePrint(2, bp2)
             #elem = elem_int_to_zero(elem)
             self.seq.seq.addElement(i+1, elem)
-            self.seq.seq.setSR(1.2e9)
+            self.seq.seq.setSR(self.SR())
             self.seq.set_all_channel_amplitude_offset(amplitude=4.5, offset=0)
             self.seq_settings_infinity_loop(i+1,len_eta)
 
@@ -116,13 +116,13 @@ class SpinBuilder(BagOfBeans):
             bp2 = self.bp_int_to_zero(bp2)
             if i == 0:
                 bp2.setSegmentMarker('aa', (0.0, 0.5e-6), 1)
-            bp.setSR(1.2e9)
-            bp2.setSR(1.2e9)
+            bp.setSR(self.SR())
+            bp2.setSR(self.SR())
             elem.addBluePrint(1, bp)
             elem.addBluePrint(2, bp2)
             #elem = elem_int_to_zero(elem)
             self.seq.seq.addElement(i+1, elem)
-            self.seq.seq.setSR(1.2e9)
+            self.seq.seq.setSR(self.SR())
             self.seq.set_all_channel_amplitude_offset(amplitude=4.5, offset=0)
             self.seq_settings_infinity_loop(i+1,len_eta)
      
@@ -148,13 +148,13 @@ class SpinBuilder(BagOfBeans):
             bp2 = self.bp_int_to_zero(bp2)
             if i == 0:
                 bp2.setSegmentMarker('aa', (0.0, 0.5e-6), 1)
-            bp.setSR(1.2e9)
-            bp2.setSR(1.2e9)
+            bp.setSR(self.SR())
+            bp2.setSR(self.SR())
             elem.addBluePrint(1, bp)
             elem.addBluePrint(2, bp2)
             #elem = elem_int_to_zero(elem)
             self.seq.seq.addElement(i+1, elem)
-            self.seq.seq.setSR(1.2e9)
+            self.seq.seq.setSR(self.SR())
             self.seq.set_all_channel_amplitude_offset(amplitude=4.5, offset=0)
             self.seq_settings_infinity_loop(i+1,len_eta)
        
@@ -193,13 +193,13 @@ class SpinBuilder(BagOfBeans):
             bp2 = self.bp_int_to_zero(bp2)
             if i == 0:
                 bp2.setSegmentMarker('aa', (0.0, 0.5e-6), 1)
-            bp.setSR(1.2e9)
-            bp2.setSR(1.2e9)
+            bp.setSR(self.SR())
+            bp2.setSR(self.SR())
             elem.addBluePrint(1, bp)
             elem.addBluePrint(2, bp2)
             #elem = elem_int_to_zero(elem)
             self.seq.seq.addElement(i+1, elem)
-            self.seq.seq.setSR(1.2e9)
+            self.seq.seq.setSR(self.SR()())
             self.seq.set_all_channel_amplitude_offset(amplitude=4.5, offset=0)
             self.seq_settings_infinity_loop(i+1,len_eta)
 
