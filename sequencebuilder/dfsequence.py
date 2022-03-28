@@ -6,11 +6,13 @@ import numpy as np
 ramp = bb.PulseAtoms.ramp
 
 
-def df_to_seq(df, divider, seg_mode_trig=False, int_to_zero=False, scale= 1e-3, timescale=1e-6, marker_time_dic=None, SR=1.2e9):
+def df_to_seq(df, divider, seg_mode_trig=False, int_to_zero=False, scale=1e-3,
+              timescale=1e-6, marker_time_dic=None, SR=1.2e9):
     seq = bb.Sequence()
     nr_elem = find_recurcive(df)
     chan_list = find_channels(df)
-    max_time = sum([smart_max(list_or_sting(t[0])) for t in df[['time']].values])*timescale
+    max_time = sum([smart_max(list_or_sting(t[0]))
+                    for t in df[['time']].values])*timescale
     id = df.index.values
     idnr = id.shape[0]
     for h in range(nr_elem):
@@ -37,7 +39,7 @@ def df_to_seq(df, divider, seg_mode_trig=False, int_to_zero=False, scale= 1e-3, 
             elem.addBluePrint(chnr, bp)
         seq.addElement(h+1, elem)
     seq.setSR(SR)
-    
+
     return seq
 
 
@@ -123,10 +125,11 @@ def strtolist(s):
         values[-1] = int(values[-1])
     return values
 
+
 def smart_max(x):
     if type(x) in (int, float, np.int64, np.float64):
         return x
-    if len(x)==3:
+    if len(x) == 3:
         x.pop()
     return max(x)
 
@@ -136,18 +139,18 @@ def bp_int_to_zero(bp, time):
     tottime = 0
     tottimevolt = 0
     for i in range(num_seg):
-        pulsestart = bp.description['segment_%02d'%(i+1)]['arguments']['start']
-        pulsestop = bp.description['segment_%02d'%(i+1)]['arguments']['stop']
-        pulsedur = bp.description['segment_%02d'%(i+1)]['durations']
+        pulsestart = bp.description[f'segment_{i+1:02d}']['arguments']['start']
+        pulsestop = bp.description[f'segment_{i+1:02d}']['arguments']['stop']
+        pulsedur = bp.description[f'segment_{i+1:02d}']['durations']
         tottime += pulsedur
         tottimevolt += pulsedur*(pulsestart+pulsestop)/2
     timeD = time*1.65 - tottime
     voltD = -tottimevolt/timeD
 
-
     bp.insertSegment(num_seg, ramp, (voltD, voltD),
-                        name='CorretD', dur=timeD)
+                     name='CorretD', dur=timeD)
     return bp
+
 
 def number_of_segments(bp):
     nr = len(bp.description)-4

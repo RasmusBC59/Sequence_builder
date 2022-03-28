@@ -6,19 +6,19 @@ from typing import Dict, Optional, Sequence
 
 class BagOfBeans(Instrument):
     """
-    Class that turns a broadbean Sequence into a QCoDeS Intrument 
+    Class that turns a broadbean Sequence into a QCoDeS Intrument
 
         Parameters
         ----------
         seq (Parseq): Broadbean Sequence tured into a QCoDeS Parameter
         seq_path (str): Path to sequence file
-        SR (float): sampling rate          
+        SR (float): sampling rate
     """
     def __init__(self, name, **kwargs):
         super().__init__(name, **kwargs)
         self.add_parameter(name='seq',
                            label='Sequence',
-                           parameter_class=ParSeq)    
+                           parameter_class=ParSeq)
         self.add_parameter(name='seq_path',
                            label='Path to sequence file',
                            get_cmd=None,
@@ -61,7 +61,8 @@ class ParSeq(Parameter):
         self.seq = bb.Sequence()
         self.seq.setSR(SR)
 
-    def set_all_channel_amplitude_offset(self, amplitude: float = 1, offset: float = 0) -> None:
+    def set_all_channel_amplitude_offset(self, amplitude: float = 1,
+                                         offset: float = 0) -> None:
         for chan in self.seq.channels:
             self.seq.setChannelAmplitude(chan, amplitude)
             self.seq.setChannelOffset(chan, offset)
@@ -72,7 +73,8 @@ class ParSeq(Parameter):
     def seq_settings_infinity_loop(self) -> None:
         """
         Play element 1 time and go to the next,
-        except if you are the last element, then play 1 time and go to the first Element.
+        except if you are the last element,
+        then play 1 time and go to the first Element.
         """
         elementlist = list(self.seq.description.keys())[:-1]
         last_elem_nr = int(elementlist[-1])
@@ -85,7 +87,6 @@ class ParSeq(Parameter):
                 self.seq.setSequencingGoto(elem_nr, 1)
             else:
                 self.seq.setSequencingGoto(elem_nr, 0)
-
 
     def plot(self):
         plotter(self.seq)
