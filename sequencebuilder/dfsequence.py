@@ -78,7 +78,7 @@ def find_channels(df):
 
 
 def getvoltvalues(volt, i=None, divider=1):
-    if isinstance(volt, (int, float)):
+    if isinstance(volt, (int, float, np.int64, np.float64)):
         return (volt*divider, volt*divider)
     elif type(volt) in (list, str):
         volt = list_or_sting(volt)
