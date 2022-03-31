@@ -25,9 +25,9 @@ class SpinBuilder(BagOfBeans):
                                 f'm{self.ch_y}1': 500e-9, f'm{self.ch_y}2': 0}
         self.spinfunnel()
 
-    def seq_from_df(self):
+    def seq_from_df(self ,int_to_zero=True):
         self.seq.seq = df_to_seq(self.df, self.divider, seg_mode_trig=True,
-                                 int_to_zero=True, scale=self.scale,
+                                 int_to_zero=int_to_zero, scale=self.scale,
                                  timescale=self.timescale,
                                  marker_time_dic=self.marker_time_dic,
                                  SR=self.SR())
