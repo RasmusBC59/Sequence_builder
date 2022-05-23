@@ -1,7 +1,7 @@
 import time
-from sequencebuilder.sequence_builder import SequenceBuilder
+from sequencebuilder.spinbuilder import SpinBuilder
 
-class AWGController(SequenceBuilder):
+class AWGController(SpinBuilder):
     def __init__(self, name: str, awg=None, **kwargs):
         super().__init__(name, **kwargs)
         self.awg = awg        
