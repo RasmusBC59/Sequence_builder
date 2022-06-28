@@ -33,7 +33,7 @@ class SpinBuilder(BagOfBeans):
                                  marker_time_dic=self.marker_time_dic,
                                  SR=self.SR())
 
-        self.seq.set_all_channel_amplitude_offset(amplitude=4.5, offset=0)
+        self.seq.set_all_channel_amplitude_offset(offset=0)
         self.seq.seq_settings_infinity_loop()
         if self.hp_frequency:
             self.seq.seq.setChannelFilterCompensation(channel=self.ch_x,
@@ -79,7 +79,7 @@ class SpinBuilder(BagOfBeans):
             elem.addBluePrint(2, bp2)
             self.seq.seq.addElement(i+1, elem)
             self.seq.seq.setSR(self.SR())
-            self.seq.set_all_channel_amplitude_offset(amplitude=4.5, offset=0)
+            self.seq.set_all_channel_amplitude_offset(offset=0)
             self.seq_settings_infinity_loop(i+1, len_eta)
 
     def exchange_seq_oneD(self, a1, a2, a3, a4, eta, a5, a6, a7,
@@ -123,7 +123,7 @@ class SpinBuilder(BagOfBeans):
             elem.addBluePrint(2, bp2)
             self.seq.seq.addElement(i+1, elem)
             self.seq.seq.setSR(self.SR())
-            self.seq.set_all_channel_amplitude_offset(amplitude=4.5, offset=0)
+            self.seq.set_all_channel_amplitude_offset(offset=0)
             self.seq_settings_infinity_loop(i+1, len_eta)
 
     def dephasing_seq(self, a1, eta, readout, a8, a9):
@@ -154,7 +154,7 @@ class SpinBuilder(BagOfBeans):
             elem.addBluePrint(2, bp2)
             self.seq.seq.addElement(i+1, elem)
             self.seq.seq.setSR(self.SR())
-            self.seq.set_all_channel_amplitude_offset(amplitude=4.5, offset=0)
+            self.seq.set_all_channel_amplitude_offset(offset=0)
             self.seq_settings_infinity_loop(i+1, len_eta)
 
     def exchange_seq_oneD_volt(self, a1, a2, a3, a4, eta, a5, a6, a7,
@@ -198,7 +198,7 @@ class SpinBuilder(BagOfBeans):
             elem.addBluePrint(2, bp2)
             self.seq.seq.addElement(i+1, elem)
             self.seq.seq.setSR(self.SR()())
-            self.seq.set_all_channel_amplitude_offset(amplitude=4.5, offset=0)
+            self.seq.set_all_channel_amplitude_offset(offset=0)
             self.seq_settings_infinity_loop(i+1, len_eta)
 
     def spin_funnel_blue_print(self, a1, a2, a3, eta, readout, a5, a6):
@@ -333,10 +333,11 @@ class AWGController(SpinBuilder):
         if '5014' in str(self.awg.__class__):
             # for i,  chan in enumerate(self.seq.get().channels):
             #    self.awg.channels[chan].AMP(float(chbox[chan-1].text()))
-            self.awg.ch1_amp(4.5)
-            self.awg.ch2_amp(4.5)
-            self.awg.ch3_amp(4.5)
-            self.awg.ch4_amp(4.5)
+            amplitude = self.amplitude.get()
+            self.awg.ch1_amp(amplitude)
+            self.awg.ch2_amp(amplitude)
+            self.awg.ch3_amp(amplitude)
+            self.awg.ch4_amp(amplitude)
             package = self.seq.get().outputForAWGFile()
             start_time = time.time()
             self.awg.make_send_and_load_awg_file(*package[:])

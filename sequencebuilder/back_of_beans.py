@@ -29,6 +29,13 @@ class BagOfBeans(Instrument):
                            initial_value=1.2e9,
                            parameter_class=sample_rate,
                            snapshot_exclude=True)
+        self.add_parameter(name='amplitude',
+                           label='Amplitude',
+                           unit='V',
+                           initial_value=4.5,
+                           get_cmd=None,
+                           set_cmd=None,
+                           snapshot_exclude=True)
 
 
 class ParSeq(Parameter):
@@ -61,8 +68,9 @@ class ParSeq(Parameter):
         self.seq = bb.Sequence()
         self.seq.setSR(SR)
 
-    def set_all_channel_amplitude_offset(self, amplitude: float = 1,
+    def set_all_channel_amplitude_offset(self,
                                          offset: float = 0) -> None:
+        amplitude = self.root_instrument.amplitude.get()
         for chan in self.seq.channels:
             self.seq.setChannelAmplitude(chan, amplitude)
             self.seq.setChannelOffset(chan, offset)
